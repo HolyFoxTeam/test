@@ -15,6 +15,20 @@
         "工具"
       ],
       "minVersion": "1.0.0"
+    },
+    {
+      "id": "napcat-plugin-aicat",
+      "name": "AI Cat",
+      "version": "1.0.0",
+      "description": "智能AI猫娘助手插件，支持 AI 对话、群管理、自定义指令、定时任务等功能",
+      "author": "冷曦",
+      "homepage": "https://github.com/lengxi-root/napcat-plugin-aicat",
+      "downloadUrl": "https://github.com/lengxi-root/napcat-plugin-aicat/releases/download/latest/napcat-plugin-aicat.zip",
+      "tags": [
+        "AI",
+        "群管"
+      ],
+      "minVersion": "1.0.0"
     }
   ]
 }
