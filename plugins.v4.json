@@ -39,7 +39,7 @@
       "homepage": "https://github.com/lengxi-root/napcat-plugin-play",
       "downloadUrl": "https://github.com/lengxi-root/napcat-plugin-play/releases/download/latest/napcat-plugin-play.zip",
       "tags": [
-        "娱乐"
+        "娱乐",
         "AI"
       ],
       "minVersion": "4.14.0"
