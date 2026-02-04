@@ -195,6 +195,20 @@
         "表情"
       ],
       "minVersion": "4.14.0"
+    },
+    {
+      "id": "napcat-plugin-qqemoji",
+      "name": "检测表情回应",
+      "version": "1.0.0",
+      "description": "NapCat检测消息中的表情并进行回应",
+      "author": "鸡太美",
+      "homepage": "https://github.com/ovoox/napcat-plugin-qqemoji",
+      "downloadUrl": "https://github.com/ovoox/napcat-plugin-qqemoji/releases/download/v1.0.0/napcat-plugin-qqemoji.zip",
+      "tags": [
+        "工具",
+        "表情"
+      ],
+      "minVersion": "4.14.0"
     }
   ]
 }
