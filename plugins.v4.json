@@ -236,6 +236,20 @@
         "工具"
       ],
       "minVersion": "4.14.0"
+    },
+    {
+      "id": "napcat-plugin-delta-force",
+      "name": "三角洲行动",
+      "version": "1.0.0",
+      "description": "三角洲行动游戏数据查询插件，支持扫码登录、战绩查询、日报周报、特勤处利润、AI锐评、TTS语音等功能",
+      "author": "冷曦",
+      "homepage": "https://github.com/Entropy-Increase-Team/napcat-plugin-delta-force",
+      "downloadUrl": "https://github.com/Entropy-Increase-Team/napcat-plugin-delta-force/releases/download/latest/napcat-plugin-delta-force.zip",
+      "tags": [
+        "游戏",
+        "工具"
+      ],
+      "minVersion": "4.14.0"
     }
   ]
 }
