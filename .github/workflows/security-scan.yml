@@ -1,0 +1,56 @@
+name: Security Scan
+
+on:
+  pull_request:
+    paths:
+      - 'plugins.v4.json'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # 尝试请求写权限以便评论（仅对自己仓库的 PR 有效）
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取完整历史以便 git diff
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch origin/main
+        run: git fetch origin main
+
+      - name: Run Security Scan
+        run: node scripts/security-scan.mjs
+        env:
+          # 如果需要 GitHub Token 下载资源可以在这里传，目前脚本使用公开链接不需要
+          CI: true
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request' && failure() == false # 仅在成功时（或需要总是）尝试评论，如果无权限则此步可能失败但 scan 已完成
+        continue-on-error: true # 如果因为来自 Fork 导致没权限评论，不要让 CI 挂掉
+        with:
+          script: |
+            const fs = require('fs');
+            try {
+              const report = fs.readFileSync('security_report.md', 'utf8');
+              // 仅当报告包含风险时评论，或者总是评论？
+              // 简单起见，总是评论，或者检查内容
+              if (report.includes('Risks Found')) {
+                 github.rest.issues.createComment({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    body: report
+                 });
+              }
+            } catch (e) {
+              console.log('No report found or failed to comment', e);
+            }
