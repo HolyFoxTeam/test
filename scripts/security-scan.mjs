@@ -198,6 +198,17 @@ ${description}
 对于每一类风险，请判断它可能是 "误报 (False Positive)" 还是 "真阳性/可疑 (True Positive / Suspicious)"，并解释原因。
 如果看起来是标准的插件行为（如保存配置、React 构建产物等），请将其标记为 "低风险 (Low Risk)"。
 请使用 Markdown 格式返回你的分析结果，并且必须使用**中文**回答。
+
+在分析的最后，请务必单独一行输出一个JSON对象，表明你认为该插件是否安全。格式如下：
+
+\`\`\`json
+{"is_safe": true}
+\`\`\`
+或者
+\`\`\`json
+{"is_safe": false}
+\`\`\`
+如果所有风险都是误报或低风险，is_safe 为 true；如果通过分析确认存在真实的恶意代码风险，is_safe 为 false。
 `;
 
     try {
@@ -242,9 +253,10 @@ async function main() {
     }
 
     let report = '## :shield: Plugin Security Scan Report\n\n';
-    let hasHighRisks = false;
+    let finalHighRisks = false;
 
     for (const plugin of targetPlugins) {
+        let pluginHasHighRisks = false;
         console.log(`Scanning ${plugin.name} (${plugin.version})...`);
         const pluginTempDir = path.join(TEMP_DIR, plugin.id);
         ensureDir(pluginTempDir);
@@ -286,7 +298,7 @@ async function main() {
                 const high = pluginRisks.filter(r => r.level === 'HIGH');
                 const medium = pluginRisks.filter(r => r.level === 'MEDIUM');
 
-                if (high.length > 0) hasHighRisks = true;
+                if (high.length > 0) pluginHasHighRisks = true;
 
                 let icon = high.length > 0 ? ':rotating_light:' : ':warning:';
                 report += `### ${plugin.name} ${plugin.version}\n${icon} **Risks Found**:\n`;
@@ -308,13 +320,33 @@ async function main() {
                     if (aiAnalysis) {
                         report += `\n### 🤖 AI Analysis for ${plugin.name}\n\n`;
                         report += aiAnalysis + '\n\n';
+
+                        // Parse AI verdict
+                        const isSafeMatch = aiAnalysis.match(/"is_safe":\s*(true|false)/);
+                        if (isSafeMatch) {
+                            const isSafe = isSafeMatch[1] === 'true';
+                            if (isSafe) {
+                                pluginHasHighRisks = false; // AI says it's safe
+                                report += `\n:white_check_mark: **AI Verdict**: Safe (False Positive).\n\n`;
+                                console.log(`  AI determined ${plugin.name} is safe.`);
+                            } else {
+                                report += `\n:rotating_light: **AI Verdict**: Potential Risk Confirmed.\n\n`;
+                                console.log(`  AI determined ${plugin.name} is risky.`);
+                            }
+                        }
                     }
                 }
+            }
+
+            if (pluginHasHighRisks) {
+                finalHighRisks = true;
             }
 
         } catch (e) {
             console.error(`  Error scanning ${plugin.id}:`, e);
             report += `### ${plugin.name} ${plugin.version}\n:x: **Error**: Failed to scan. (${e.message})\n\n`;
+            // Scan error means risk unknown, conservatively mark as high risk
+            finalHighRisks = true;
         }
     }
 
@@ -323,7 +355,7 @@ async function main() {
 
     // Set output for GitHub Actions
     if (process.env.GITHUB_OUTPUT) {
-        fs.appendFileSync(process.env.GITHUB_OUTPUT, `has_high_risks=${hasHighRisks}\n`);
+        fs.appendFileSync(process.env.GITHUB_OUTPUT, `has_high_risks=${finalHighRisks}\n`);
     }
 
     // Write to GITHUB_STEP_SUMMARY if available
