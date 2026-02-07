@@ -100,6 +100,12 @@ NapCat 插件索引仓库
 5. 提交流程推荐使用 [napcat-plugin-template](https://github.com/AQiaoYo/napcat-plugin-template) 模板开发，享受自动化测试和发布。
 6. 本仓库启用 AI 技术对插件代码进行安全审查，请确保代码清晰，避免过度混淆。
 
+### 插件规范要求
+
+1. **插件 ID (包名) 必须以 `napcat-plugin-` 开头**（如 `napcat-plugin-music`）
+2. 请确保 JSON 中的所有必填字段（ID、版本、描述、作者、下载链接等）完整且准确
+3. `homepage` 字段必须是有效的 GitHub 仓库链接或其他可访问的项目主页
+
 ---
 
 ## 📄 License
