@@ -39,7 +39,7 @@ NapCat 插件索引仓库
 3. 在插件仓库 Settings > Secrets 中配置 `INDEX_PAT`（一个有 `repo` 权限的 Personal Access Token，用于向本仓库提交 PR）
 4. 正常开发，推送 `v*` tag 即可自动发布并更新索引
 
-> 💡 详细的模板使用说明请参阅 [napcat-plugin-template README](https://github.com/NapNeko/napcat-plugin-template)
+> 💡 详细的模板使用说明请参阅 [napcat-plugin-template README](https://github.com/AQiaoYo/napcat-plugin-template)
 
 ---
 
@@ -96,7 +96,7 @@ NapCat 插件索引仓库
 2. `downloadUrl` 必须是可直接下载的 zip 文件链接
 3. 版本号需符合 semver 格式（如 `1.0.0`、`1.2.3-beta.1`）
 4. 提交前请在本地测试插件是否可正常下载和安装
-5. 推荐使用 [napcat-plugin-template](https://github.com/NapNeko/napcat-plugin-template) 模板开发，享受自动化提交体验
+5. 推荐使用 [napcat-plugin-template](https://github.com/AQiaoYo/napcat-plugin-template) 模板开发，享受自动化提交体验
 
 ---
 
