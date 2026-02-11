@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updateTime": "2026-02-11T10:46:53Z",
+  "updateTime": "2026-02-11T12:08:48Z",
   "plugins": [
     {
       "id": "napcat-plugin-builtin",
@@ -89,13 +89,14 @@
     {
       "id": "napcat-plugin-auto-tasks",
       "name": "自动化任务插件",
-      "version": "1.1.0",
-      "description": "NapCat 自动化任务 (自动打卡/续火花/自定义任务)",
+      "version": "1.2.0",
+      "description": "NapCat 自动化任务 (自动打卡/续火花/自定义任务/群公告)",
       "author": "Chace",
-      "homepage": "https://github.com/chaceqc/napcat-plugin-auto-tasks",
-      "downloadUrl": "https://github.com/chaceqc/napcat-plugin-auto-tasks/releases/download/v1.1.0/napcat-plugin-auto-tasks.zip",
+      "homepage": "https://github.com/ChaceQC/napcat-plugin-auto-tasks",
+      "downloadUrl": "https://github.com/ChaceQC/napcat-plugin-auto-tasks/releases/download/v1.2.0/napcat-plugin-auto-tasks.zip",
       "tags": [
-        "工具"
+        "工具",
+        "定时任务"
       ],
       "minVersion": "4.14.0"
     },
