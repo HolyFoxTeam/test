@@ -430,6 +430,20 @@
         "娱乐"
       ],
       "minVersion": "4.14.0"
+    },
+    {
+      "id": "napcat-plugin-aichat",
+      "name": "AI 聊天插件",
+      "version": "1.2.1",
+      "description": "NapCat 插件 - AI 聊天插件",
+      "author": "LinmingXHL",
+      "homepage": "https://github.com/Linming-XHL/napcat-plugin-aichat",
+      "downloadUrl": "https://github.com/Linming-XHL/napcat-plugin-aichat/releases/download/v1.2.1/napcat-plugin-aichat.zip",
+      "tags": [
+        "工具",
+        "AI"
+      ],
+      "minVersion": "4.14.0"
     }
   ]
 }
