@@ -1,4 +1,4 @@
-name: Security Scan
+name: 安全扫描
 
 on:
   pull_request_target:
