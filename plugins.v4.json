@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updateTime": "2026-02-15T00:54:13Z",
+  "updateTime": "2026-02-15T15:11:25Z",
   "plugins": [
     {
       "id": "napcat-plugin-builtin",
@@ -159,11 +159,11 @@
     {
       "id": "napcat-plugin-bilibili",
       "name": "Bilibili 解析",
-      "version": "1.1.4",
+      "version": "1.1.5",
       "description": "自动解析聊天消息中的 Bilibili 视频链接,并获取视频详情发送到聊天中",
       "author": "AQiaoYo",
       "homepage": "https://github.com/AQiaoYo/napcat-plugin-bilibili",
-      "downloadUrl": "https://github.com/AQiaoYo/napcat-plugin-bilibili/releases/download/v1.1.4/napcat-plugin-bilibili.zip",
+      "downloadUrl": "https://github.com/AQiaoYo/napcat-plugin-bilibili/releases/download/v1.1.5/napcat-plugin-bilibili.zip",
       "tags": [
         "工具",
         "娱乐"
