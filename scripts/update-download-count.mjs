@@ -1,53 +1,210 @@
-name: 更新插件下载量
+#!/usr/bin/env node
+/**
+ * 更新插件下载量
+ * 通过 GitHub API 获取 Release 下载量并更新到 plugins.v4.json
+ */
 
-on:
-  schedule:
-    - cron: "0 0 * * *"
-  workflow_dispatch:
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-permissions:
-  contents: write
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(__dirname, '..');
+const PLUGINS_FILE = resolve(ROOT, 'plugins.v4.json');
 
-concurrency:
-  group: ${{ github.ref }}-store
-  cancel-in-progress: false
+const GITHUB_API_BASE = 'https://api.github.com';
+const CONCURRENCY = 5;
+const RETRY_TIMES = 2;
+const RETRY_DELAY = 1000;
 
-jobs:
-  update-download:
-    name: 更新下载量
-    runs-on: ubuntu-latest
+function log(msg) {
+  console.log(`[${new Date().toISOString()}] ${msg}`);
+}
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+function logError(msg) {
+  console.error(`[${new Date().toISOString()}] ❌ ${msg}`);
+}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+function logOk(msg) {
+  console.log(`[${new Date().toISOString()}] ✅ ${msg}`);
+}
 
-      - name: 更新下载量
-        run: node scripts/update-download-count.mjs
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          UPDATE_PLUGIN_TIME: false 
+function checkFileExists(filePath) {
+  if (!existsSync(filePath)) {
+    throw new Error(`文件不存在: ${filePath}`);
+  }
+  log(`找到插件配置文件: ${filePath}`);
+}
 
-      - name: 提交更改到 store 分支
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin store 2>/dev/null || true
-          if git show-ref --verify --quiet refs/remotes/origin/store; then
-            git checkout -B store origin/store
-          else
-            git checkout --orphan store
-          fi
-          # 确保只添加 plugins.v4.json，避免混入其他文件
-          git add -f plugins.v4.json
-          if git diff --cached --quiet; then
-            echo "⚠️ 无文件变化，跳过提交"
-          else
-            git commit -m "chore: 更新插件下载量"
-            echo "✅ 提交成功，准备推送 store 分支"
-            git push origin store
-          fi
+function extractGitHubRepo(downloadUrl) {
+  try {
+    const url = new URL(downloadUrl);
+    if (url.hostname !== 'github.com') return null;
+    const parts = url.pathname.split('/').filter(p => p);
+    if (parts.length < 2) return null;
+    return { owner: parts[0], repo: parts[1] };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchWithRetry(url, options = {}, retry = RETRY_TIMES) {
+  try {
+    const res = await fetch(url, options);
+    if (!res.ok) {
+      throw new Error(`GitHub API 返回 ${res.status} (${res.statusText})`);
+    }
+    return res.json();
+  } catch (err) {
+    if (retry > 0) {
+      log(`请求失败，剩余重试次数: ${retry}，错误: ${err.message}`);
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return fetchWithRetry(url, options, retry - 1);
+    }
+    throw err;
+  }
+}
+
+async function fetchGitHubReleases(owner, repo, token = null) {
+  const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/releases`;
+  const headers = {
+    'User-Agent': 'napcat-plugin-index',
+    'Accept': 'application/vnd.github.v3+json'
+  };
+  if (token) headers['Authorization'] = `token ${token}`;
+
+  return fetchWithRetry(url, { headers });
+}
+
+async function getDownloadCountForPlugin(plugin, token) {
+  const { downloadUrl } = plugin;
+  const repoInfo = extractGitHubRepo(downloadUrl);
+
+  if (!repoInfo) {
+    return { plugin, count: null, error: '无法从 downloadUrl 提取 GitHub 仓库信息' };
+  }
+
+  try {
+    const releases = await fetchGitHubReleases(repoInfo.owner, repoInfo.repo, token);
+    let totalCount = 0;
+
+    for (const release of releases) {
+      if (release.assets) {
+        for (const asset of release.assets) {
+          totalCount += asset.download_count || 0;
+        }
+      }
+    }
+
+    return { plugin, count: totalCount, error: null };
+  } catch (err) {
+    return { plugin, count: null, error: err.message };
+  }
+}
+
+function getBeijingTime() {
+  const now = new Date();
+  const beijingTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+  return beijingTime.toISOString().replace(/\.\d{3}Z$/, '+08:00');
+}
+
+async function updateDownloadCounts(token, updatePluginTime = false) {
+  checkFileExists(PLUGINS_FILE);
+
+  if (updatePluginTime) {
+    log('开始更新插件下载量和插件 updateTime...');
+  } else {
+    log('开始更新插件下载量...');
+  }
+
+  let content;
+  try {
+    content = readFileSync(PLUGINS_FILE, 'utf-8');
+  } catch (err) {
+    throw new Error(`读取文件失败: ${err.message}`);
+  }
+
+  let data;
+  try {
+    data = JSON.parse(content);
+  } catch (err) {
+    throw new Error(`解析 JSON 失败: ${err.message}`);
+  }
+
+  const plugins = data.plugins || [];
+  if (plugins.length === 0) {
+    log('⚠️ 未找到任何插件数据');
+    return;
+  }
+
+  const results = [];
+
+  for (let i = 0; i < plugins.length; i += CONCURRENCY) {
+    const batch = plugins.slice(i, i + CONCURRENCY);
+    const batchResults = await Promise.all(
+      batch.map(plugin => getDownloadCountForPlugin(plugin, token))
+    );
+    results.push(...batchResults);
+  }
+
+  const beijingNow = getBeijingTime();
+  let downloadCountUpdated = 0;
+  let hasAnyChange = false;
+
+  for (const result of results) {
+    const { plugin, count, error } = result;
+
+    const pluginIndex = plugins.findIndex(p => p.id === plugin.id);
+    if (pluginIndex !== -1) {
+      const originalCount = plugins[pluginIndex].downloadCount || 0;
+
+      if (error) {
+        logError(`[${plugin.id}] 获取下载量失败: ${error}`);
+        plugins[pluginIndex].downloadCount = originalCount;
+      } else {
+
+        if (plugins[pluginIndex].downloadCount !== count) {
+          hasAnyChange = true;
+          downloadCountUpdated++;
+        }
+        plugins[pluginIndex].downloadCount = count;
+        logOk(`[${plugin.id}] 下载量: ${count}`);
+      }
+
+      if (updatePluginTime) {
+        hasAnyChange = true;
+        plugins[pluginIndex].updateTime = beijingNow;
+        logOk(`[${plugin.id}] updateTime 已设置为: ${beijingNow}`);
+      }
+    }
+  }
+
+  if (hasAnyChange) {
+    try {
+      writeFileSync(PLUGINS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+      log(`✅ 文件已写入，共更新 ${downloadCountUpdated} 个插件的下载量`);
+    } catch (err) {
+      throw new Error(`写入文件失败: ${err.message}`);
+    }
+  } else {
+    log('ℹ️ 无任何数据变化，跳过文件写入');
+  }
+
+  if (updatePluginTime) {
+    log(`更新完成，共更新 ${downloadCountUpdated} 个插件的下载量，所有插件的 updateTime 已更新为 ${beijingNow}`);
+  } else {
+    log(`下载量更新完成，共更新 ${downloadCountUpdated} 个插件`);
+  }
+}
+
+(async () => {
+  const token = process.env.GITHUB_TOKEN || null;
+  const updatePluginTime = process.env.UPDATE_PLUGIN_TIME === 'true';
+
+  try {
+    await updateDownloadCounts(token, updatePluginTime);
+  } catch (err) {
+    logError(`脚本执行失败: ${err.message}`);
+    process.exit(1);
+  }
+})();
