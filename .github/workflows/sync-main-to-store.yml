@@ -1,0 +1,54 @@
+name: 同步 main 到 store
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.ref }}-store
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出 main 分支
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-repo
+
+      - name: 检出 store 分支
+        uses: actions/checkout@v4
+        with:
+          ref: store
+          path: store-repo
+          fetch-depth: 0   
+
+      - name: 合并插件数据（保留 store 的下载量）
+        run: node ./main-repo/scripts/merge-plugins.mjs
+        env:
+          MAIN_FILE: ./main-repo/plugins.v4.json
+          STORE_FILE: ./store-repo/plugins.v4.json
+          OUTPUT_FILE: ./store-repo/plugins.v4.json
+
+      - name: 同步其他必要文件（可选）
+        run: |
+          cp -r ./main-repo/.github ./store-repo/ 2>/dev/null || true
+          cp ./main-repo/README.md ./store-repo/ 2>/dev/null || true
+
+      - name: 提交并推送到 store
+        run: |
+          cd store-repo
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "⚠️ 无文件变化，跳过提交"
+          else
+            git commit -m "chore: 从 main 同步更新（保留下载量）"
+            git push origin store
+          fi
