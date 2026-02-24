@@ -14,6 +14,8 @@ NapCat 插件索引仓库
 
 使用 [napcat-plugin-template](https://github.com/AQiaoYo/napcat-plugin-template) 模板开发插件，内置 CI 会在你发布 Release 时**自动向本仓库提交 PR**，经 CI 全自动审核通过后由维护者合并，无需手动操作。
 
+推送到此仓库需要修改工作流（文件：'.github/workflows/update-index.ym'l）目标索引仓库地址为当前仓库
+
 **流程：**
 
 ```
@@ -38,7 +40,7 @@ NapCat 插件索引仓库
      }
    }
    ```
-3. 在插件仓库 Settings > Secrets 中配置 `INDEX_PAT`（一个有 `repo` 权限的 Personal Access Token，用于向本仓库提交 PR）
+3. 在插件仓库 Settings > Secrets 中配置 `INDEX_PAT`（一个有 `repo` 和 `workflow` 权限的 Personal Access Token，用于向本仓库提交 PR）
 4. 正常开发，推送 `v*` tag 即可自动发布并更新索引
 
 > 💡 详细的模板使用说明请参阅 [napcat-plugin-template README](https://github.com/AQiaoYo/napcat-plugin-template)
