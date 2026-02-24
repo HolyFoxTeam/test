@@ -28,14 +28,14 @@ jobs:
           path: store-repo
           fetch-depth: 0   
 
-      - name: 合并插件数据（保留 store 的下载量）
+      - name: 合并插件数据
         run: node ./main-repo/scripts/merge-plugins.mjs
         env:
           MAIN_FILE: ./main-repo/plugins.v4.json
           STORE_FILE: ./store-repo/plugins.v4.json
           OUTPUT_FILE: ./store-repo/plugins.v4.json
 
-      - name: 同步其他必要文件（可选）
+      - name: 同步其他必要文件>
         run: |
           cp -r ./main-repo/.github ./store-repo/ 2>/dev/null || true
           cp ./main-repo/README.md ./store-repo/ 2>/dev/null || true
