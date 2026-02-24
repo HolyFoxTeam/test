@@ -30,18 +30,30 @@ jobs:
         run: node scripts/update-download-count.mjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          UPDATE_PLUGIN_TIME: false 
+          UPDATE_PLUGIN_TIME: false
 
       - name: 提交更改到 store 分支
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          git stash push -m "download-update" || echo "没有需要暂存的修改"
+
           git fetch origin store 2>/dev/null || true
           if git show-ref --verify --quiet refs/remotes/origin/store; then
             git checkout -B store origin/store
           else
             git checkout --orphan store
           fi
+
+          if git stash list | grep -q "download-update"; then
+            git stash pop || {
+              echo "应用暂存时发生冲突，尝试强制覆盖"
+              git checkout stash@{0} -- plugins.v4.json
+              git stash drop
+            }
+          fi
+
           git add -f plugins.v4.json
           if git diff --cached --quiet; then
             echo "⚠️ 无文件变化，跳过提交"
