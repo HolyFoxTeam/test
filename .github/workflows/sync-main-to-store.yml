@@ -18,37 +18,42 @@ jobs:
       - name: 检出 main 分支
         uses: actions/checkout@v4
         with:
-          ref: main
-          path: main-repo
+          fetch-depth: 0 
 
-      - name: 检出 store 分支
-        uses: actions/checkout@v4
-        with:
-          ref: store
-          path: store-repo
-          fetch-depth: 0   
-
-      - name: 合并插件数据
-        run: node ./main-repo/scripts/merge-plugins.mjs
-        env:
-          MAIN_FILE: ./main-repo/plugins.v4.json
-          STORE_FILE: ./store-repo/plugins.v4.json
-          OUTPUT_FILE: ./store-repo/plugins.v4.json
-
-      - name: 同步其他必要文件>
+      - name: 合并插件数据并推送到 store
         run: |
-          cp -r ./main-repo/.github ./store-repo/ 2>/dev/null || true
-          cp ./main-repo/README.md ./store-repo/ 2>/dev/null || true
-
-      - name: 提交并推送到 store
-        run: |
-          cd store-repo
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin store 2>/dev/null || true
+
+          if git show-ref --verify --quiet refs/remotes/origin/store; then
+            git checkout -B store origin/store
+          else
+            git checkout --orphan store
+            git rm -rf . 2>/dev/null || true
+          fi
+
+          if [ -f plugins.v4.json ]; then
+            cp plugins.v4.json store.plugins.json
+          else
+            echo '{"plugins":[]}' > store.plugins.json
+          fi
+
+          git checkout main -- plugins.v4.json
+          cp plugins.v4.json main.plugins.json
+
+          node scripts/merge-plugins.mjs --main main.plugins.json --store store.plugins.json --output plugins.v4.json
+
+          git checkout main -- .github README.md 2>/dev/null || true
+
           git add .
           if git diff --cached --quiet; then
             echo "⚠️ 无文件变化，跳过提交"
           else
             git commit -m "chore: 从 main 同步更新（保留下载量）"
+            echo "✅ 提交成功，准备推送 store 分支"
             git push origin store
           fi
+
+          rm -f main.plugins.json store.plugins.json

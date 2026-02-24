@@ -1,13 +1,33 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
+import { parseArgs } from 'util';
 
-const MAIN_FILE = process.env.MAIN_FILE;
-const STORE_FILE = process.env.STORE_FILE;
-const OUTPUT_FILE = process.env.OUTPUT_FILE;
+// 解析命令行参数
+const options = {
+  main: { type: 'string' },
+  store: { type: 'string' },
+  output: { type: 'string' },
+};
 
-if (!MAIN_FILE || !STORE_FILE || !OUTPUT_FILE) {
-  console.error('❌ 请设置 MAIN_FILE, STORE_FILE, OUTPUT_FILE 环境变量');
+let mainFile, storeFile, outputFile;
+
+try {
+  const { values } = parseArgs({ options, strict: false });
+  mainFile = values.main;
+  storeFile = values.store;
+  outputFile = values.output;
+} catch {
+  // 解析失败则忽略，尝试使用环境变量
+}
+
+// 如果命令行参数缺失，回退到环境变量
+mainFile = mainFile || process.env.MAIN_FILE;
+storeFile = storeFile || process.env.STORE_FILE;
+outputFile = outputFile || process.env.OUTPUT_FILE;
+
+if (!mainFile || !storeFile || !outputFile) {
+  console.error('❌ 请通过命令行参数 --main, --store, --output 或环境变量 MAIN_FILE, STORE_FILE, OUTPUT_FILE 指定文件路径');
   process.exit(1);
 }
 
@@ -20,12 +40,12 @@ function readJSON(file) {
   }
 }
 
-const mainData = readJSON(MAIN_FILE);
+const mainData = readJSON(mainFile);
 let storeData = { plugins: [] };
 try {
-  storeData = readJSON(STORE_FILE);
+  storeData = readJSON(storeFile);
 } catch (err) {
-  console.log('⚠️ store 文件不存在，将视为空数据');
+  console.log('⚠️ store 文件不存在或无效，将视为空数据');
 }
 
 // 构建 store 插件的映射，方便查找下载量
@@ -53,5 +73,5 @@ if (mainData.plugins) {
 mainData.plugins = mergedPlugins;
 
 // 写回文件
-writeFileSync(OUTPUT_FILE, JSON.stringify(mainData, null, 2), 'utf-8');
+writeFileSync(outputFile, JSON.stringify(mainData, null, 2), 'utf-8');
 console.log('✅ 插件数据合并完成，已保留 store 中的下载量');
