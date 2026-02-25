@@ -1,0 +1,59 @@
+name: 同步 main 到 store
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.ref }}-store
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出 main 分支
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: 合并插件数据并推送到 store
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin store 2>/dev/null || true
+
+          if git show-ref --verify --quiet refs/remotes/origin/store; then
+            git checkout -B store origin/store
+          else
+            git checkout --orphan store
+            git rm -rf . 2>/dev/null || true
+          fi
+
+          if [ -f plugins.v4.json ]; then
+            cp plugins.v4.json store.plugins.json
+          else
+            echo '{"plugins":[]}' > store.plugins.json
+          fi
+
+          git checkout main -- plugins.v4.json
+          cp plugins.v4.json main.plugins.json
+
+          node scripts/merge-plugins.mjs --main main.plugins.json --store store.plugins.json --output plugins.v4.json
+
+          git checkout main -- .github README.md 2>/dev/null || true
+
+          git add .
+          if git diff --cached --quiet; then
+            echo "⚠️ 无文件变化，跳过提交"
+          else
+            git commit -m "chore: 从 main 同步更新（保留下载量）"
+            echo "✅ 提交成功，准备推送 store 分支"
+            git push origin store
+          fi
+
+          rm -f main.plugins.json store.plugins.json

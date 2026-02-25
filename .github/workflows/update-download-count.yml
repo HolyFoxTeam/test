@@ -1,0 +1,64 @@
+name: 更新插件下载量
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.ref }}-store
+  cancel-in-progress: false
+
+jobs:
+  update-download:
+    name: 更新下载量
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 更新下载量
+        run: node scripts/update-download-count.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPDATE_PLUGIN_TIME: false
+
+      - name: 提交更改到 store 分支
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          git stash push -m "download-update" || echo "没有需要暂存的修改"
+
+          git fetch origin store 2>/dev/null || true
+          if git show-ref --verify --quiet refs/remotes/origin/store; then
+            git checkout -B store origin/store
+          else
+            git checkout --orphan store
+          fi
+
+          if git stash list | grep -q "download-update"; then
+            git stash pop || {
+              echo "应用暂存时发生冲突，尝试强制覆盖"
+              git checkout stash@{0} -- plugins.v4.json
+              git stash drop
+            }
+          fi
+
+          git add -f plugins.v4.json
+          if git diff --cached --quiet; then
+            echo "⚠️ 无文件变化，跳过提交"
+          else
+            git commit -m "chore: 更新插件下载量"
+            echo "✅ 提交成功，准备推送 store 分支"
+            git push origin store
+          fi
