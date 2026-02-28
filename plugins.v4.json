@@ -15,7 +15,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 7347
+      "downloadCount": 7684
     },
     {
       "id": "napcat-plugin-cleaner",
@@ -30,7 +30,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 7347
+      "downloadCount": 7684
     },
     {
       "id": "napcat-plugin-debug",
@@ -44,7 +44,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1581
+      "downloadCount": 1690
     },
     {
       "id": "napcat-plugin-group-manager",
@@ -60,7 +60,7 @@
         "管理"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 2590
+      "downloadCount": 2599
     },
     {
       "id": "napcat-plugin-auto-tasks",
@@ -75,7 +75,7 @@
         "定时任务"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 2464
+      "downloadCount": 2472
     },
     {
       "id": "napcat-plugin-tsai",
@@ -90,7 +90,7 @@
         "AI"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1066
+      "downloadCount": 1074
     },
     {
       "id": "napcat-plugin-group-revoke",
@@ -105,7 +105,7 @@
         "撤回"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1414
+      "downloadCount": 1422
     },
     {
       "id": "napcat-plugin-ssqq",
@@ -119,7 +119,7 @@
         "工具"
       ],
       "minVersion": "4.14.13",
-      "downloadCount": 9277
+      "downloadCount": 9466
     },
     {
       "id": "napcat-plugin-qemoji",
@@ -134,7 +134,7 @@
         "表情"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1186
+      "downloadCount": 1194
     },
     {
       "id": "napcat-plugin-qqemoji",
@@ -149,7 +149,7 @@
         "表情"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1763
+      "downloadCount": 1771
     },
     {
       "id": "napcat-plugin-hjm",
@@ -164,7 +164,7 @@
         "哈基米"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1798
+      "downloadCount": 1806
     },
     {
       "id": "napcat-plugin-delta-force",
@@ -179,7 +179,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 821
+      "downloadCount": 831
     },
     {
       "id": "napcat-plugin-autoaccept",
@@ -194,7 +194,7 @@
         "自动"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1386
+      "downloadCount": 1394
     },
     {
       "id": "napcat-plugin-diytitle",
@@ -209,7 +209,7 @@
         "头衔"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 806
+      "downloadCount": 814
     },
     {
       "id": "napcat-plugin-terraria-wiki",
@@ -223,7 +223,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 269
+      "downloadCount": 277
     },
     {
       "id": "napcat-plugin-openclaw",
@@ -239,7 +239,7 @@
         "自动化"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 244
+      "downloadCount": 248
     },
     {
       "id": "napcat-plugin-minecraft-connector",
@@ -253,7 +253,7 @@
         "工具"
       ],
       "minVersion": "4.14.13",
-      "downloadCount": 706
+      "downloadCount": 714
     },
     {
       "id": "napcat-plugin-email",
@@ -269,7 +269,7 @@
         "SMTP"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 518
+      "downloadCount": 526
     },
     {
       "id": "napcat-plugin-auto-to-like",
@@ -283,7 +283,7 @@
         "娱乐"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1298
+      "downloadCount": 1307
     },
     {
       "id": "napcat-plugin-master",
@@ -297,7 +297,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 693
+      "downloadCount": 701
     },
     {
       "id": "napcat-plugin-checkin",
@@ -312,7 +312,7 @@
         "娱乐"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1396
+      "downloadCount": 1406
     },
     {
       "id": "napcat-plugin-aichat",
@@ -327,7 +327,7 @@
         "AI"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1140
+      "downloadCount": 1149
     },
     {
       "id": "napcat-plugin-groupname",
@@ -341,7 +341,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 344
+      "downloadCount": 352
     },
     {
       "id": "napcat-plugin-novel-downloader",
@@ -356,7 +356,7 @@
         "娱乐"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 521
+      "downloadCount": 530
     },
     {
       "id": "napcat-plugin-douyin",
@@ -371,7 +371,7 @@
         "娱乐"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1238
+      "downloadCount": 1248
     },
     {
       "id": "napcat-plugin-gscore-adapter",
@@ -385,7 +385,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 793
+      "downloadCount": 806
     },
     {
       "id": "napcat-plugin-manborvc",
@@ -399,7 +399,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 810
+      "downloadCount": 817
     },
     {
       "id": "napcat-plugin-mqtt",
@@ -413,7 +413,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 151
+      "downloadCount": 156
     },
     {
       "id": "napcat-plugin-rss",
@@ -428,7 +428,7 @@
         "RSS"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 246
+      "downloadCount": 252
     },
     {
       "id": "napcat-plugin-today-wife",
@@ -443,7 +443,7 @@
         "群聊"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 1913
+      "downloadCount": 1919
     },
     {
       "id": "napcat-plugin-60s-api",
@@ -473,7 +473,7 @@
         "工具"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 253
+      "downloadCount": 258
     },
     {
       "id": "napcat-plugin-pixiv",
@@ -488,7 +488,7 @@
         "Pixiv"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 530
+      "downloadCount": 537
     },
     {
       "id": "napcat-plugin-brushing",
@@ -503,7 +503,7 @@
         "自动化"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 27
+      "downloadCount": 30
     },
     {
       "id": "napcat-plugin-update-checker",
@@ -518,7 +518,7 @@
         "管理"
       ],
       "minVersion": "4.14.0",
-      "downloadCount": 45
+      "downloadCount": 54
     }
   ]
 }
